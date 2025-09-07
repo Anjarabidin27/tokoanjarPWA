@@ -25,6 +25,7 @@ export const LoginPage = () => {
   const [showSignUp, setShowSignUp] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [accessCode, setAccessCode] = useState('');
 
   useEffect(() => {
     if (user && !loading) {
@@ -53,6 +54,15 @@ export const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    // Check if outside operating hours and validate access code
+    if (!isOperatingHours()) {
+      if (accessCode !== '165432') {
+        setError('Kode akses diperlukan untuk login diluar jam operasional');
+        setIsLoading(false);
+        return;
+      }
+    }
 
     let result;
     if (formData.email.includes('@')) {
@@ -103,10 +113,10 @@ export const LoginPage = () => {
     }
   };
 
-  // Check if current time is within operating hours (07:00 - 17:00)
+  // Check if current time is within operating hours (06:00 - 17:00)
   const isOperatingHours = () => {
     const currentHour = currentTime.getHours();
-    return currentHour >= 7 && currentHour < 17;
+    return currentHour >= 6 && currentHour < 17;
   };
 
   // Format time to Indonesian locale
@@ -270,24 +280,18 @@ export const LoginPage = () => {
             </div>
           </div>
           
-          {/* Compact Time & Status Bar */}
-          <div className="flex items-center justify-between px-4 py-2 bg-muted/30 rounded-lg border">
+          {/* Current Time Display */}
+          <div className="flex items-center justify-center px-4 py-2 bg-muted/30 rounded-lg border">
             <div className="flex items-center gap-2">
               <Clock className="h-3 w-3 text-primary" />
               <span className="font-mono text-sm font-medium">
                 {formatTime(currentTime)}
               </span>
             </div>
-            <Badge 
-              variant={isOperatingHours() ? "default" : "secondary"}
-              className={`text-xs ${isOperatingHours() ? "bg-success" : ""}`}
-            >
-              {isOperatingHours() ? "Buka" : "Tutup"}
-            </Badge>
           </div>
           
           <div className="text-xs text-muted-foreground mt-2">
-            {formatDate(currentTime)} • Jam Operasional: 07:00 - 17:00
+            {formatDate(currentTime)}
           </div>
           
           {/* Development Note */}
@@ -328,6 +332,21 @@ export const LoginPage = () => {
                 required
               />
             </div>
+
+            {!isOperatingHours() && (
+              <div className="space-y-2">
+                <Label htmlFor="accessCode" className="text-sm font-medium">Kode Akses</Label>
+                <Input
+                  id="accessCode"
+                  type="password"
+                  value={accessCode}
+                  onChange={(e) => setAccessCode(e.target.value)}
+                  placeholder="Masukkan kode akses"
+                  className="h-11"
+                  required
+                />
+              </div>
+            )}
 
             {error && (
               <Alert variant="destructive" className="py-2">
