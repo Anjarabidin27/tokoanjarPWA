@@ -7,6 +7,10 @@
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "orientation": "portrait",
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
       "src": "/icon-192.png",
