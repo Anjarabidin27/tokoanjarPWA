@@ -65,18 +65,11 @@ export const QuantitySelector = ({
 
   const handleUnitQuantityChange = (value: number) => {
     if (value < 0) return;
-    
     setUnitQuantity(value);
-    const multiplier = getUnitMultiplier(selectedUnit, category);
-    const totalQuantity = value * multiplier;
-    onQuantityChange(totalQuantity);
   };
 
   const handleUnitChange = (unit: string) => {
     setSelectedUnit(unit);
-    const multiplier = getUnitMultiplier(unit, category);
-    const totalQuantity = unitQuantity * multiplier;
-    onQuantityChange(totalQuantity);
   };
 
   const handlePriceChange = (value: string) => {
@@ -149,7 +142,7 @@ export const QuantitySelector = ({
             <Input
               type="number"
               value={unitQuantity}
-              onChange={(e) => handleUnitQuantityChange(parseInt(e.target.value) || 0)}
+              onChange={(e) => setUnitQuantity(parseInt(e.target.value) || 0)}
               className="h-8 w-16 text-center text-sm"
               min="0"
             />
@@ -165,6 +158,20 @@ export const QuantitySelector = ({
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 px-3"
+              onClick={() => {
+                const multiplier = getUnitMultiplier(selectedUnit, category);
+                const addQuantity = unitQuantity * multiplier;
+                onQuantityChange(quantity + addQuantity);
+                setUnitQuantity(0); // Reset after adding
+              }}
+              disabled={unitQuantity === 0}
+            >
+              Tambah
+            </Button>
           </div>
         </div>
       )}

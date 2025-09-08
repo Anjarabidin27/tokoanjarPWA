@@ -324,45 +324,69 @@ Profit: ${formatPrice(receipt.profit)}
         <div className="w-full px-2 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Store className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <div>
-                <h1 className="text-lg sm:text-2xl font-bold">Kasir Toko Anjar</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
-                  Jalan Gajah - Dempet (Depan Koramil)
-                </p>
-                <p className="text-xs sm:text-sm text-primary font-medium">
-                  {getWelcomeMessage()}, Admin Kasir
-                </p>
+              <div className="flex items-center gap-2">
+                <Store className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+                <div className="hidden sm:block">
+                  <h1 className="text-lg sm:text-2xl font-bold">Kasir Toko Anjar</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    Jalan Gajah - Dempet (Depan Koramil)
+                  </p>
+                  <p className="text-xs sm:text-sm text-primary font-medium">
+                    {getWelcomeMessage()}, Admin Kasir
+                  </p>
+                </div>
+                {/* Mobile compact header */}
+                <div className="sm:hidden">
+                  <h1 className="text-sm font-bold">Toko Anjar</h1>
+                  <p className="text-xs text-primary">
+                    {getWelcomeMessage()}
+                  </p>
+                </div>
               </div>
             </div>
             
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* Bluetooth Manager */}
-              <BluetoothManager />
+            <div className="flex items-center gap-1 sm:gap-4">
+              {/* Mobile compact version */}
+              <div className="sm:hidden">
+                <BluetoothManager />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="h-8 w-8 p-0"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
               
-              {/* Thermal Print Status */}
-              {(lastReceipt || selectedReceipt) && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-md border">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-muted-foreground">
-                    Tekan <kbd className="px-1 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd> untuk print thermal
-                  </span>
-                </div>
-              )}
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="flex items-center gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Logout</span>
-              </Button>
-              <div className="text-right text-xs sm:text-sm">
-                <div className="font-semibold">Admin Kasir</div>
-                <div className="text-muted-foreground hidden sm:block">
-                  {new Date().toLocaleDateString('id-ID')}
+              {/* Desktop version */}
+              <div className="hidden sm:flex items-center gap-4">
+                <BluetoothManager />
+                
+                {/* Thermal Print Status */}
+                {(lastReceipt || selectedReceipt) && (
+                  <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-md border">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-muted-foreground">
+                      Tekan <kbd className="px-1 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd> untuk print thermal
+                    </span>
+                  </div>
+                )}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </Button>
+                <div className="text-right text-xs sm:text-sm">
+                  <div className="font-semibold">Admin Kasir</div>
+                  <div className="text-muted-foreground">
+                    {new Date().toLocaleDateString('id-ID')}
+                  </div>
                 </div>
               </div>
             </div>
@@ -429,14 +453,38 @@ Profit: ${formatPrice(receipt.profit)}
           }
         }} className="w-full">
           <TabsList className="flex w-full h-auto p-1 overflow-x-auto gap-1 justify-start sm:grid sm:grid-cols-8 sm:gap-1">
-            <TabsTrigger value="pos" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3">Kasir</TabsTrigger>
-            <TabsTrigger value="manual-invoice" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3 whitespace-nowrap">Nota Manual</TabsTrigger>
-            <TabsTrigger value="shopping-list" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3 whitespace-nowrap">Daftar Belanja</TabsTrigger>
-            <TabsTrigger value="stock" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3">Stok</TabsTrigger>
-            <TabsTrigger value="receipt" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3">Nota</TabsTrigger>
-            <TabsTrigger value="reports" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3">Laporan</TabsTrigger>
-            <TabsTrigger value="manual-reports" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3 whitespace-nowrap">Laporan Manual</TabsTrigger>
-            <TabsTrigger value="admin" className="flex-shrink-0 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3">Admin</TabsTrigger>
+            <TabsTrigger value="pos" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              <span className="sm:hidden">💰</span>
+              <span className="hidden sm:inline">Kasir</span>
+            </TabsTrigger>
+            <TabsTrigger value="manual-invoice" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 whitespace-nowrap">
+              <span className="sm:hidden">📄</span>
+              <span className="hidden sm:inline">Nota Manual</span>
+            </TabsTrigger>
+            <TabsTrigger value="shopping-list" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 whitespace-nowrap">
+              <span className="sm:hidden">📝</span>
+              <span className="hidden sm:inline">Daftar Belanja</span>
+            </TabsTrigger>
+            <TabsTrigger value="stock" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              <span className="sm:hidden">📦</span>
+              <span className="hidden sm:inline">Stok</span>
+            </TabsTrigger>
+            <TabsTrigger value="receipt" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              <span className="sm:hidden">🧾</span>
+              <span className="hidden sm:inline">Nota</span>
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              <span className="sm:hidden">📊</span>
+              <span className="hidden sm:inline">Laporan</span>
+            </TabsTrigger>
+            <TabsTrigger value="manual-reports" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 whitespace-nowrap">
+              <span className="sm:hidden">📋</span>
+              <span className="hidden sm:inline">Laporan Manual</span>
+            </TabsTrigger>
+            <TabsTrigger value="admin" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              <span className="sm:hidden">⚙️</span>
+              <span className="hidden sm:inline">Admin</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pos" className="space-y-2 sm:space-y-4 mt-2 sm:mt-4">

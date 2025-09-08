@@ -31,6 +31,20 @@ export const ProductGrid = ({ products, onAddToCart, onPhotocopyClick }: Product
     const quantity = quantities[product.id] || 1;
     onAddToCart(product, quantity);
     setQuantities(prev => ({ ...prev, [product.id]: 0 }));
+    
+    // Add haptic feedback for mobile
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
+    }
+    
+    // Import and show toast
+    import('sonner').then(({ toast }) => {
+      toast.success(`${product.name} ditambahkan ke keranjang`, {
+        description: `${quantity} item berhasil ditambahkan`,
+        duration: 2000,
+        position: 'bottom-center',
+      });
+    });
   };
 
   return (

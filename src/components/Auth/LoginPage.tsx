@@ -280,13 +280,32 @@ export const LoginPage = () => {
             </div>
           </div>
           
-          {/* Current Time Display */}
-          <div className="flex items-center justify-center px-4 py-2 bg-muted/30 rounded-lg border">
-            <div className="flex items-center gap-2">
-              <Clock className="h-3 w-3 text-primary" />
-              <span className="font-mono text-sm font-medium">
-                {formatTime(currentTime)}
-              </span>
+          {/* Status Toko dan Waktu */}
+          <div className="space-y-2">
+            <div className={`flex items-center justify-center px-4 py-2 rounded-lg border transition-all duration-500 ${
+              isOperatingHours() 
+                ? 'bg-green-500/10 border-green-500/20 animate-fade-in' 
+                : 'bg-red-500/10 border-red-500/20 animate-fade-in'
+            }`}>
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full animate-pulse ${
+                  isOperatingHours() ? 'bg-green-500' : 'bg-red-500'
+                }`} />
+                <span className={`text-xs font-semibold ${
+                  isOperatingHours() ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'
+                }`}>
+                  {isOperatingHours() ? 'TOKO BUKA' : 'TOKO TUTUP'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-center px-4 py-2 bg-muted/30 rounded-lg border">
+              <div className="flex items-center gap-2">
+                <Clock className="h-3 w-3 text-primary" />
+                <span className="font-mono text-sm font-medium">
+                  {formatTime(currentTime)}
+                </span>
+              </div>
             </div>
           </div>
           
@@ -358,10 +377,31 @@ export const LoginPage = () => {
               <Button 
                 type="submit" 
                 className="w-full h-11 bg-gradient-to-r from-primary to-primary-light hover:from-primary/90 hover:to-primary-light/90" 
-                disabled={isLoading}
+                disabled={isLoading || (!isOperatingHours() && !accessCode)}
               >
                 {isLoading ? 'Memproses...' : 'Masuk ke Sistem'}
               </Button>
+              
+              {!isOperatingHours() && (
+                <Button 
+                  type="submit" 
+                  variant="outline"
+                  className="w-full h-11 border-orange-500 text-orange-700 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-orange-950" 
+                  disabled={isLoading}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setAccessCode('165432'); // Set access code automatically
+                    setTimeout(() => {
+                      const form = e.currentTarget.closest('form');
+                      if (form) {
+                        form.requestSubmit();
+                      }
+                    }, 100);
+                  }}
+                >
+                  ⚠️ Paksa Login (Diluar Jam Operasional)
+                </Button>
+              )}
               
               <div className="flex gap-2">
                {/*  <Button 
