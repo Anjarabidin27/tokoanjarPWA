@@ -11,7 +11,9 @@ import {
   DialogDescription 
 } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
-import { Copy, Calculator } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Copy, Calculator, Wifi } from 'lucide-react';
+import { WiFiPrinterManager } from './WiFiPrinterManager';
 
 interface PhotocopyDialogProps {
   isOpen: boolean;
@@ -66,20 +68,45 @@ export const PhotocopyDialog = ({ isOpen, onClose, product, onAddToCart }: Photo
     setUseTotalPrice(false);
   };
 
+  const handleWiFiPrint = async (printerId: string, settings: any, document: File): Promise<boolean> => {
+    try {
+      // Here you would implement actual WiFi printing logic
+      // For now, we'll simulate the process
+      console.log('Printing to WiFi printer:', { printerId, settings, document });
+      
+      // Add to cart as photocopy service
+      const copies = settings.copies || 1;
+      const customPrice = getTieredPrice(copies);
+      onAddToCart(product, copies, customPrice);
+      
+      return true;
+    } catch (error) {
+      console.error('WiFi print error:', error);
+      return false;
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-4xl mx-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Copy className="h-5 w-5" />
             Fotocopy A4
           </DialogTitle>
           <DialogDescription>
-            Pilih metode input harga untuk layanan fotocopy
+            Pilih metode input atau gunakan WiFi direct print
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <Tabs defaultValue="manual" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="manual">Manual Input</TabsTrigger>
+            <TabsTrigger value="wifi">WiFi Print</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="manual" className="space-y-4">
+            <div className="space-y-4">
           {/* Input Method Selection */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
@@ -211,16 +238,38 @@ export const PhotocopyDialog = ({ isOpen, onClose, product, onAddToCart }: Photo
             </div>
           </Card>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={onClose}>
-              Batal
-            </Button>
-            <Button className="flex-1" variant="success" onClick={handleSubmit}>
-              Tambah ke Keranjang
-            </Button>
-          </div>
-        </div>
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={onClose}>
+                Batal
+              </Button>
+              <Button className="flex-1" variant="success" onClick={handleSubmit}>
+                Tambah ke Keranjang
+              </Button>
+            </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="wifi" className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
+                <Wifi className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="font-medium">WiFi Direct Print</div>
+                  <div className="text-sm text-muted-foreground">
+                    Cetak langsung ke printer melalui WiFi tanpa input manual
+                  </div>
+                </div>
+              </div>
+              
+              <WiFiPrinterManager onPrint={handleWiFiPrint} />
+              
+              <Button variant="outline" onClick={onClose} className="w-full">
+                Tutup
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

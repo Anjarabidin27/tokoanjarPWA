@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PhotocopyDialog } from './PhotocopyDialog';
 import { PhotocopyService } from './PhotocopyService';
+import { WiFiPrinterManager } from './WiFiPrinterManager';
 import { AdminProtection } from '@/components/Auth/AdminProtection';
 import { 
   LazyProductGrid,
@@ -278,10 +279,18 @@ Profit: ${formatPrice(receipt.profit)}
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    if (!searchTerm.trim()) return true;
+    
+    const searchWords = searchTerm.toLowerCase().trim().split(/\s+/);
+    const productName = product.name.toLowerCase();
+    const productCategory = product.category?.toLowerCase() || '';
+    
+    // Check if all search words are found in product name or category
+    return searchWords.every(word => 
+      productName.includes(word) || productCategory.includes(word)
+    );
+  });
 
   // Memoized calculations for dashboard statistics to improve performance and ensure reactivity
   const dashboardStats = useMemo(() => {
@@ -336,6 +345,12 @@ Profit: ${formatPrice(receipt.profit)}
     if (hour < 15) return "Selamat Siang"; 
     if (hour < 19) return "Selamat Sore";
     return "Selamat Malam";
+  };
+
+
+  const handleWiFiDirectPrint = async (printerId: string, settings: any, document: File): Promise<boolean> => {
+    // This function is now just a passthrough since WiFiPrinterManager handles the real printing
+    return true;
   };
 
   return (
@@ -475,8 +490,7 @@ Profit: ${formatPrice(receipt.profit)}
               </div>
             </CardContent>
           </Card>
-          
-          
+
           <Card className="pos-card cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleDashboardClick('stock')}>
             <CardContent className="flex items-center p-4">
               <Users className="h-8 w-8 text-error mr-3" />
@@ -495,38 +509,33 @@ Profit: ${formatPrice(receipt.profit)}
             setCurrentTab(value);
           }
         }} className="w-full">
-          <TabsList className="flex w-full h-auto p-1 overflow-x-auto gap-1 justify-start sm:grid sm:grid-cols-8 sm:gap-1">
-            <TabsTrigger value="pos" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
-              <span className="sm:hidden">💰</span>
-              <span className="hidden sm:inline">Kasir</span>
+          <TabsList className="flex flex-wrap w-full h-auto p-1 gap-1 justify-start sm:grid sm:grid-cols-8 sm:gap-1">
+            <TabsTrigger value="pos" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Kasir
             </TabsTrigger>
-            <TabsTrigger value="manual-invoice" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 whitespace-nowrap">
-              <span className="sm:hidden">📄</span>
-              <span className="hidden sm:inline">Nota Manual</span>
+            <TabsTrigger value="manual-invoice" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Nota Manual
             </TabsTrigger>
-            <TabsTrigger value="shopping-list" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 whitespace-nowrap">
-              <span className="sm:hidden">📝</span>
-              <span className="hidden sm:inline">Daftar Belanja</span>
+            <TabsTrigger value="shopping-list" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Daftar Belanja
             </TabsTrigger>
-            <TabsTrigger value="stock" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
-              <span className="sm:hidden">📦</span>
-              <span className="hidden sm:inline">Stok</span>
+            <TabsTrigger value="stock" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Stok
             </TabsTrigger>
-            <TabsTrigger value="receipt" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
-              <span className="sm:hidden">🧾</span>
-              <span className="hidden sm:inline">Nota</span>
+            <TabsTrigger value="receipt" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Nota
             </TabsTrigger>
-            <TabsTrigger value="reports" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
-              <span className="sm:hidden">📊</span>
-              <span className="hidden sm:inline">Laporan</span>
+            <TabsTrigger value="wifi-print" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Cetak WiFi
             </TabsTrigger>
-            <TabsTrigger value="manual-reports" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 whitespace-nowrap">
-              <span className="sm:hidden">📋</span>
-              <span className="hidden sm:inline">Laporan Manual</span>
+            <TabsTrigger value="reports" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Laporan
             </TabsTrigger>
-            <TabsTrigger value="admin" className="flex-shrink-0 text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
-              <span className="sm:hidden">⚙️</span>
-              <span className="hidden sm:inline">Admin</span>
+            <TabsTrigger value="manual-reports" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Laporan Manual
+            </TabsTrigger>
+            <TabsTrigger value="admin" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+              Admin
             </TabsTrigger>
           </TabsList>
 
@@ -553,6 +562,63 @@ Profit: ${formatPrice(receipt.profit)}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           className="pl-9 h-8 sm:h-10 text-sm"
                         />
+                        
+                        {/* Live Search Results Dropdown */}
+                        {searchTerm.trim() && (
+                          <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-card border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                            {filteredProducts.slice(0, 8).map((product) => (
+                              <div
+                                key={product.id}
+                                className="p-2 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                                onClick={() => {
+                                  if (product.isPhotocopy) {
+                                    handlePhotocopyClick(product);
+                                  } else {
+                                    addToCart(product, 1);
+                                  }
+                                  setSearchTerm('');
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-sm">{product.name}</div>
+                                    <div className="text-xs text-muted-foreground flex items-center gap-2">
+                                      <span>{formatPrice(product.sellPrice)}</span>
+                                      {product.category && (
+                                        <Badge variant="secondary" className="text-xs">
+                                          {product.category}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="ml-2">
+                                    {product.stock > 0 ? (
+                                      <Badge 
+                                        variant={product.stock <= 10 ? "destructive" : "outline"}
+                                        className="text-xs"
+                                      >
+                                        {product.stock}
+                                      </Badge>
+                                    ) : product.isPhotocopy ? (
+                                      <Badge variant="secondary" className="text-xs">
+                                        Service
+                                      </Badge>
+                                    ) : (
+                                      <Badge variant="destructive" className="text-xs">
+                                        Habis
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            {filteredProducts.length === 0 && (
+                              <div className="p-4 text-center text-sm text-muted-foreground">
+                                Produk tidak ditemukan
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -645,6 +711,17 @@ Profit: ${formatPrice(receipt.profit)}
             <Suspense fallback={<ComponentLoader />}>
               <LazyShoppingList />
             </Suspense>
+          </TabsContent>
+
+          <TabsContent value="wifi-print" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Cetak via WiFi</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <WiFiPrinterManager onPrint={handleWiFiDirectPrint} />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="admin" className="space-y-4">

@@ -53,6 +53,12 @@ export const AddProductForm = ({ onAddProduct, onUpdateProduct, products = [], o
       });
     } else {
       // Create new product
+      console.log('AddProductForm Debug - Creating product:', {
+        formData,
+        stockQuantity,
+        isService,
+        finalStock: (formData.isPhotocopy || isService) ? 0 : (stockQuantity || 0)
+      });
       onAddProduct({
         name: formData.name,
         costPrice: parseFloat(formData.costPrice) || 0,
@@ -241,7 +247,10 @@ export const AddProductForm = ({ onAddProduct, onUpdateProduct, products = [], o
                     quantity={stockQuantity}
                     productName={formData.name}
                     category={formData.category}
-                    onQuantityChange={setStockQuantity}
+                    onQuantityChange={(newQuantity) => {
+                      console.log('AddProductForm - Stock quantity changed:', { from: stockQuantity, to: newQuantity });
+                      setStockQuantity(newQuantity);
+                    }}
                     showUnitSelector={true}
                   />
                 </div>

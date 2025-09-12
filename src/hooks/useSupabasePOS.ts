@@ -87,7 +87,7 @@ export const useSupabasePOS = () => {
       if (error) throw error;
 
       const formattedReceipts: Receipt[] = receiptsData.map(receipt => ({
-        id: receipt.id,
+        id: receipt.invoice_number || receipt.id,
         items: receipt.receipt_items.map((item: any) => ({
           product: item.products ? {
             id: item.products.id,
@@ -117,7 +117,7 @@ export const useSupabasePOS = () => {
         photocopyRevenue: 0, // Legacy field, not used
         timestamp: new Date(receipt.created_at),
         paymentMethod: receipt.payment_method,
-        isManual: receipt.id.startsWith('MNL-')
+        isManual: (receipt.invoice_number || receipt.id).startsWith('MNL-')
       }));
 
       setReceipts(formattedReceipts);
@@ -208,58 +208,41 @@ export const useSupabasePOS = () => {
         sum + ((item.finalPrice || item.product.sellPrice) - item.product.costPrice) * item.quantity, 0
       );
 
-      // Generate invoice number with retry logic to handle race conditions
+      // Generate counter-based invoice number
       const now = new Date();
       const day = String(now.getDate()).padStart(2, '0');
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const year = String(now.getFullYear()).slice(-2);
       const dateStr = `${day}${month}${year}`;
       
-      let invoiceNumber: string;
-      let receiptData: any;
-      let receiptError: any;
-      let attempts = 0;
-      const maxAttempts = 5;
+      // Get current count of receipts for today to create counter
+      const { data: existingReceipts, error: countError } = await supabase
+        .from('receipts')
+        .select('id')
+        .eq('user_id', user.id)
+        .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString())
+        .lt('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString());
 
-      // Retry mechanism for invoice number generation
-      do {
-        attempts++;
-        
-        // Get current milliseconds + attempt number for uniqueness
-        const timestamp = Date.now();
-        const randomSuffix = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-        
-        // Create a more unique invoice number pattern
-        invoiceNumber = `${timestamp.toString().slice(-6)}${dateStr}${randomSuffix}`;
+      if (countError) throw countError;
 
-        // Try to create receipt with generated invoice number
-        const result = await supabase
-          .from('receipts')
-          .insert({
-            id: invoiceNumber,
-            user_id: user.id,
-            subtotal,
-            discount,
-            total,
-            profit,
-            payment_method: paymentMethod,
-            invoice_number: invoiceNumber
-          })
-          .select()
-          .single();
-        
-        receiptData = result.data;
-        receiptError = result.error;
-        
-        // If successful, break the loop
-        if (!receiptError) break;
-        
-        // If it's not a duplicate key error, break and handle error
-        if (receiptError.code !== '23505') break;
-        
-        // Wait a bit before retrying
-        await new Promise(resolve => setTimeout(resolve, 50 * attempts));
-      } while (receiptError && receiptError.code === '23505' && attempts < maxAttempts);
+      const counter = (existingReceipts?.length || 0) + 1;
+      const invoiceNumber = `INV-${counter}${dateStr}`;
+
+      // Create receipt with generated invoice number
+      const { data: receiptData, error: receiptError } = await supabase
+        .from('receipts')
+        .insert({
+          id: invoiceNumber,
+          invoice_number: invoiceNumber,
+          user_id: user.id,
+          subtotal,
+          discount,
+          total,
+          profit,
+          payment_method: paymentMethod
+        })
+        .select()
+        .single();
 
       if (receiptError) throw receiptError;
 
@@ -361,57 +344,43 @@ export const useSupabasePOS = () => {
     if (!user) return;
 
     try {
-      // Generate manual invoice number with retry logic
+      // Generate counter-based manual invoice number
       const now = new Date();
       const day = String(now.getDate()).padStart(2, '0');
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const year = String(now.getFullYear()).slice(-2);
       const dateStr = `${day}${month}${year}`;
       
-      let invoiceNumber: string;
-      let receiptData: any;
-      let receiptError: any;
-      let attempts = 0;
-      const maxAttempts = 5;
+      // Get current count of manual receipts for today to create counter
+      const { data: existingReceipts, error: countError } = await supabase
+        .from('receipts')
+        .select('invoice_number')
+        .eq('user_id', user.id)
+        .like('invoice_number', 'MNL-%')
+        .gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString())
+        .lt('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString());
 
-      // Retry mechanism for manual invoice number generation
-      do {
-        attempts++;
-        
-        // Generate unique manual invoice number
-        const timestamp = Date.now();
-        const randomSuffix = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-        invoiceNumber = `MNL-${timestamp.toString().slice(-6)}${dateStr}${randomSuffix}`;
+      if (countError) throw countError;
 
-        // Try to create receipt with generated invoice number
-        const result = await supabase
-          .from('receipts')
-          .insert({
-            id: invoiceNumber,
-            user_id: user.id,
-            invoice_number: invoiceNumber,
-            subtotal: receipt.subtotal,
-            discount: receipt.discount,
-            total: receipt.total,
-            profit: receipt.profit,
-            payment_method: receipt.paymentMethod,
-            created_at: receipt.timestamp.toISOString()
-          })
-          .select()
-          .single();
-        
-        receiptData = result.data;
-        receiptError = result.error;
-        
-        // If successful, break the loop
-        if (!receiptError) break;
-        
-        // If it's not a duplicate key error, break and handle error
-        if (receiptError.code !== '23505') break;
-        
-        // Wait a bit before retrying
-        await new Promise(resolve => setTimeout(resolve, 50 * attempts));
-      } while (receiptError && receiptError.code === '23505' && attempts < maxAttempts);
+      const counter = (existingReceipts?.length || 0) + 1;
+      const invoiceNumber = `MNL-${counter}${dateStr}`;
+
+      // Create manual receipt with generated invoice number
+      const { data: receiptData, error: receiptError } = await supabase
+        .from('receipts')
+        .insert({
+          id: invoiceNumber,
+          invoice_number: invoiceNumber,
+          user_id: user.id,
+          subtotal: receipt.subtotal,
+          discount: receipt.discount,
+          total: receipt.total,
+          profit: receipt.profit,
+          payment_method: receipt.paymentMethod,
+          created_at: receipt.timestamp.toISOString()
+        })
+        .select()
+        .single();
 
       if (receiptError) throw receiptError;
 

@@ -14,6 +14,7 @@ interface ProductGridProps {
 
 export const ProductGrid = ({ products, onAddToCart, onPhotocopyClick }: ProductGridProps) => {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [getTotalQuantityRefs, setGetTotalQuantityRefs] = useState<Record<string, () => number>>({});
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -28,7 +29,10 @@ export const ProductGrid = ({ products, onAddToCart, onPhotocopyClick }: Product
   };
 
   const handleAddToCart = (product: Product) => {
-    const quantity = quantities[product.id] || 1;
+    // Use getTotalQuantity if available, otherwise use base quantity
+    const getTotalQuantity = getTotalQuantityRefs[product.id];
+    const quantity = getTotalQuantity ? getTotalQuantity() : (quantities[product.id] || 1);
+    
     onAddToCart(product, quantity);
     setQuantities(prev => ({ ...prev, [product.id]: 0 }));
     
@@ -106,20 +110,23 @@ export const ProductGrid = ({ products, onAddToCart, onPhotocopyClick }: Product
               ) : (
                
                 <div className="space-y-2">
-                  <QuantitySelector
-                    quantity={quantities[product.id] || 0}
-                    productName={product.name}
-                    category={product.category}
-                    maxStock={product.stock}
-                    onQuantityChange={(quantity) => handleQuantityChange(product.id, quantity)}
-                    showUnitSelector={true}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddToCart(product);
-                      }
-                    }}
-                  />
+                   <QuantitySelector
+                     quantity={quantities[product.id] || 0}
+                     productName={product.name}
+                     category={product.category}
+                     maxStock={product.stock}
+                     onQuantityChange={(quantity) => handleQuantityChange(product.id, quantity)}
+                     showUnitSelector={true}
+                     onGetTotalQuantity={(getTotalQuantity) => {
+                       setGetTotalQuantityRefs(prev => ({ ...prev, [product.id]: getTotalQuantity }));
+                     }}
+                     onKeyDown={(e) => {
+                       if (e.key === 'Enter') {
+                         e.preventDefault();
+                         handleAddToCart(product);
+                       }
+                     }}
+                   />
                   <Button 
                     className="w-full"
                     disabled={product.stock === 0}

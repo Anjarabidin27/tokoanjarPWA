@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartItem, Receipt as ReceiptType } from '@/types/pos';
@@ -16,6 +15,7 @@ import { toast } from 'sonner';
 import { QuantitySelector } from './QuantitySelector';
 import { QuickProductSearch } from './QuickProductSearch';
 import { Product } from '@/types/pos';
+import { useBluetoothContext } from '@/contexts/BluetoothContext';
 
 interface ShoppingCartProps {
   cart: CartItem[];
@@ -50,6 +50,7 @@ export const ShoppingCart = ({
   const [editingPrice, setEditingPrice] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
+  const { isConnected, isConnecting, connect } = useBluetoothContext();
 
   const handlePriceChange = (productId: string, newPrice: number) => {
     const item = cart.find(item => item.product.id === productId);
@@ -110,6 +111,15 @@ export const ShoppingCart = ({
     setIsProcessing(true);
     
     try {
+      // If not connected, try to connect first
+      if (!isConnected) {
+        const connected = await connect();
+        if (!connected) {
+          toast.error('Gagal terhubung ke printer thermal. Pastikan printer menyala dan dalam jangkauan.');
+          return;
+        }
+      }
+
       const receipt = await processTransaction(paymentMethod, discountAmount);
       if (receipt) {
         try {
@@ -161,15 +171,32 @@ export const ShoppingCart = ({
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <Badge variant="secondary" className="text-xs">{cart.length} item</Badge>
+            
+            {/* Enhanced Thermal Print Button with connection status */}
             <Button
               size="sm"
-              variant="outline"
+              variant={isConnected ? "default" : "outline"}
               onClick={handleThermalPrint}
-              className="h-5 w-5 sm:h-6 sm:w-6 p-0"
-              title="Print Thermal"
+              disabled={isProcessing || isConnecting}
+              className={`h-6 w-auto px-2 sm:h-7 sm:px-3 flex items-center gap-1 ${
+                isConnected ? 'bg-success hover:bg-success/90 text-success-foreground' : 
+                isConnecting ? 'animate-pulse' : ''
+              }`}
+              title={isConnected ? 'Print Thermal (Terhubung)' : isConnecting ? 'Menghubungkan...' : 'Print Thermal (Belum Terhubung)'}
             >
-              <Printer className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+              {isConnecting ? (
+                <Bluetooth className="h-3 w-3 animate-spin" />
+              ) : (
+                <>
+                  <Printer className="h-3 w-3" />
+                  {isConnected && <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>}
+                </>
+              )}
+              <span className="hidden sm:inline text-xs">
+                {isConnecting ? 'Connecting' : isConnected ? 'Print' : 'Print'}
+              </span>
             </Button>
+            
             <Button
               size="sm"
               variant="outline"
@@ -219,6 +246,62 @@ export const ShoppingCart = ({
                 <div className="text-xs text-muted-foreground mb-2 sm:mb-3">
                   {formatPrice(item.finalPrice || item.product.sellPrice)} × {item.quantity}
                 </div>
+                
+                {/* Bulk Pricing Display */}
+                {item.quantity >= 12 && (
+                  <div className="mb-2 p-2 bg-primary/5 rounded border">
+                    <div className="text-xs font-medium text-primary mb-1">Harga Khusus:</div>
+                    <div className="space-y-1 text-xs">
+                      {/* Per Lusin (12 pcs) */}
+                      {item.quantity >= 12 && (
+                        <div className="flex justify-between">
+                          <span>Per Lusin ({Math.floor(item.quantity / 12)} lusin):</span>
+                          <span className="font-medium">
+                            {formatPrice((item.finalPrice || item.product.sellPrice) * 12)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Per Kodi (20 pcs) */}
+                      {item.quantity >= 20 && (
+                        <div className="flex justify-between">
+                          <span>Per Kodi ({Math.floor(item.quantity / 20)} kodi):</span>
+                          <span className="font-medium">
+                            {formatPrice((item.finalPrice || item.product.sellPrice) * 20)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Per Gros (144 pcs) */}
+                      {item.quantity >= 144 && (
+                        <div className="flex justify-between">
+                          <span>Per Gros ({Math.floor(item.quantity / 144)} gros):</span>
+                          <span className="font-medium">
+                            {formatPrice((item.finalPrice || item.product.sellPrice) * 144)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Per Rim (500 sheets for paper) */}
+                      {item.product.category === 'Kertas' && item.quantity >= 500 && (
+                        <div className="flex justify-between">
+                          <span>Per Rim ({Math.floor(item.quantity / 500)} rim):</span>
+                          <span className="font-medium">
+                            {formatPrice((item.finalPrice || item.product.sellPrice) * 500)}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Total for current quantity */}
+                      <div className="flex justify-between pt-1 border-t border-primary/20">
+                        <span className="font-medium">Total ({item.quantity} pcs):</span>
+                        <span className="font-bold text-primary">
+                          {formatPrice((item.finalPrice || item.product.sellPrice) * item.quantity)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
                 <QuantitySelector
                   quantity={item.quantity}

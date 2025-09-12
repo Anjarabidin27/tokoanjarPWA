@@ -20,10 +20,18 @@ export const QuickProductSearch = ({ products, onAddToCart, formatPrice }: Quick
   const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = products
-    .filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    .filter(product => {
+      if (!searchTerm.trim()) return false;
+      
+      const searchWords = searchTerm.toLowerCase().trim().split(/\s+/);
+      const productName = product.name.toLowerCase();
+      const productCategory = product.category?.toLowerCase() || '';
+      
+      // Check if all search words are found in product name or category
+      return searchWords.every(word => 
+        productName.includes(word) || productCategory.includes(word)
+      );
+    })
     .slice(0, 5); // Limit to 5 results
 
   useEffect(() => {

@@ -71,6 +71,7 @@ export const StockManagement = ({
     if (addAmount > 0) {
       const product = products.find(p => p.id === productId);
       if (product) {
+        console.log('StockManagement - Adding stock:', { productId, addAmount, currentStock: product.stock, newStock: product.stock + addAmount });
         onUpdateProduct(productId, { stock: product.stock + addAmount });
         setBulkStockInputs(prev => ({ ...prev, [productId]: 0 }));
         
@@ -245,28 +246,31 @@ export const StockManagement = ({
               )}
 
               {!isService(product) && !readOnly && (
-                <div className="mt-3 p-3 bg-muted/50 rounded border">
-                  <div className="text-xs font-medium mb-2">Tambah Stok:</div>
-                   <QuantitySelector
-                     quantity={bulkStockInputs[product.id] || 0}
-                     productName={product.name}
-                     category={product.category}
-                     onQuantityChange={(qty) => setBulkStockInputs(prev => ({
-                       ...prev,
-                       [product.id]: qty
-                     }))}
-                     showUnitSelector={true}
-                   />
-                  <Button
-                    size="sm"
-                    onClick={() => handleBulkStockAdd(product.id)}
-                    className="h-8 px-3 mt-2"
-                    disabled={!bulkStockInputs[product.id] || bulkStockInputs[product.id] <= 0}
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Tambah
-                  </Button>
-                </div>
+                 <div className="mt-3 p-3 bg-muted/50 rounded border">
+                   <div className="text-xs font-medium mb-2">Tambah Stok:</div>
+                    <QuantitySelector
+                      quantity={bulkStockInputs[product.id] || 0}
+                      productName={product.name}
+                      category={product.category}
+                      onQuantityChange={(qty) => {
+                        console.log('StockManagement - Quantity changed for', product.name, ':', qty);
+                        setBulkStockInputs(prev => ({
+                          ...prev,
+                          [product.id]: qty
+                        }));
+                      }}
+                      showUnitSelector={true}
+                    />
+                   <Button
+                     size="sm"
+                     onClick={() => handleBulkStockAdd(product.id)}
+                     className="h-8 px-3 mt-2"
+                     disabled={!bulkStockInputs[product.id] || bulkStockInputs[product.id] <= 0}
+                   >
+                     <Plus className="h-3 w-3 mr-1" />
+                     Tambah
+                   </Button>
+                 </div>
               )}
 
               {product.stock <= 24 && !isService(product) && (
