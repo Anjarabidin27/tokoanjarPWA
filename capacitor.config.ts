@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.2e18c95d191f4517aba9ef9096017fc0',
+  appId: 'com.anjar.tokoanjar',
   appName: 'anjarpos5-22',
   webDir: 'dist',
   server: {
