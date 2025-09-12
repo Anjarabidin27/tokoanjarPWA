@@ -15,40 +15,42 @@ import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <POSProvider>
-            <BluetoothProvider>
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <POSInterface />
-                  </ProtectedRoute>
-                } />
-                <Route path="/cart" element={
-                  <ProtectedRoute>
-                    <CartView />
-                  </ProtectedRoute>
-                } />
-                <Route path="/reports" element={
-                  <ProtectedRoute>
-                    <ReportsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BluetoothProvider>
-          </POSProvider>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <POSProvider>
+              <BluetoothProvider>
+                <Routes>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <POSInterface />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/cart" element={
+                    <ProtectedRoute>
+                      <CartView />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/reports" element={
+                    <ProtectedRoute>
+                      <ReportsPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BluetoothProvider>
+            </POSProvider>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
