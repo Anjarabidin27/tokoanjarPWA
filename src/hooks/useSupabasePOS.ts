@@ -87,7 +87,7 @@ export const useSupabasePOS = () => {
       if (error) throw error;
 
       const formattedReceipts: Receipt[] = receiptsData.map(receipt => ({
-        id: receipt.invoice_number || receipt.id,
+        id: receipt.id,
         items: receipt.receipt_items.map((item: any) => ({
           product: item.products ? {
             id: item.products.id,
@@ -117,7 +117,7 @@ export const useSupabasePOS = () => {
         photocopyRevenue: 0, // Legacy field, not used
         timestamp: new Date(receipt.created_at),
         paymentMethod: receipt.payment_method,
-        isManual: (receipt.invoice_number || receipt.id).startsWith('MNL-')
+        isManual: receipt.id.startsWith('MNL-')
       }));
 
       setReceipts(formattedReceipts);
