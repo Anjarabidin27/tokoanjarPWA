@@ -25,6 +25,7 @@ export type Database = {
           name: string
           sell_price: number
           stock: number
+          store_id: string | null
           updated_at: string
         }
         Insert: {
@@ -37,6 +38,7 @@ export type Database = {
           name: string
           sell_price: number
           stock?: number
+          store_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -49,9 +51,18 @@ export type Database = {
           name?: string
           sell_price?: number
           stock?: number
+          store_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -135,6 +146,7 @@ export type Database = {
           id: string
           payment_method: string | null
           profit: number
+          store_id: string | null
           subtotal: number
           total: number
           user_id: string
@@ -145,6 +157,7 @@ export type Database = {
           id?: string
           payment_method?: string | null
           profit: number
+          store_id?: string | null
           subtotal: number
           total: number
           user_id: string
@@ -155,11 +168,20 @@ export type Database = {
           id?: string
           payment_method?: string | null
           profit?: number
+          store_id?: string | null
           subtotal?: number
           total?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "receipts_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shopping_items: {
         Row: {
@@ -170,6 +192,7 @@ export type Database = {
           name: string
           notes: string | null
           quantity: number | null
+          store_id: string | null
           unit: string | null
           updated_at: string
           user_id: string
@@ -182,6 +205,7 @@ export type Database = {
           name: string
           notes?: string | null
           quantity?: number | null
+          store_id?: string | null
           unit?: string | null
           updated_at?: string
           user_id: string
@@ -194,9 +218,54 @@ export type Database = {
           name?: string
           notes?: string | null
           quantity?: number | null
+          store_id?: string | null
           unit?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_items_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stores: {
+        Row: {
+          address: string | null
+          cashier_name: string | null
+          category: Database["public"]["Enums"]["store_category"]
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          cashier_name?: string | null
+          category: Database["public"]["Enums"]["store_category"]
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          cashier_name?: string | null
+          category?: Database["public"]["Enums"]["store_category"]
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -214,7 +283,15 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      store_category:
+        | "sembako"
+        | "bangunan"
+        | "agen_sosis"
+        | "atk"
+        | "elektronik"
+        | "pakaian"
+        | "farmasi"
+        | "lainnya"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -341,6 +418,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      store_category: [
+        "sembako",
+        "bangunan",
+        "agen_sosis",
+        "atk",
+        "elektronik",
+        "pakaian",
+        "farmasi",
+        "lainnya",
+      ],
+    },
   },
 } as const
