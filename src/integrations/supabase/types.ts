@@ -14,116 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
-      daily_reports: {
-        Row: {
-          created_at: string
-          id: string
-          photocopy_income: number | null
-          report_date: string
-          total_profit: number | null
-          total_sales: number | null
-          total_transactions: number | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          photocopy_income?: number | null
-          report_date: string
-          total_profit?: number | null
-          total_sales?: number | null
-          total_transactions?: number | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          photocopy_income?: number | null
-          report_date?: string
-          total_profit?: number | null
-          total_sales?: number | null
-          total_transactions?: number | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       products: {
         Row: {
           barcode: string | null
-          category: string
+          category: string | null
           cost_price: number
           created_at: string
-          description: string | null
           id: string
-          is_photocopy: boolean
+          is_photocopy: boolean | null
           name: string
-          price: number
           sell_price: number
           stock: number
           updated_at: string
         }
         Insert: {
           barcode?: string | null
-          category: string
-          cost_price?: number
+          category?: string | null
+          cost_price: number
           created_at?: string
-          description?: string | null
           id?: string
-          is_photocopy?: boolean
+          is_photocopy?: boolean | null
           name: string
-          price: number
-          sell_price?: number
+          sell_price: number
           stock?: number
           updated_at?: string
         }
         Update: {
           barcode?: string | null
-          category?: string
+          category?: string | null
           cost_price?: number
           created_at?: string
-          description?: string | null
           id?: string
-          is_photocopy?: boolean
+          is_photocopy?: boolean | null
           name?: string
-          price?: number
           sell_price?: number
           stock?: number
           updated_at?: string
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          admin_password: string | null
+          created_at: string
+          email: string
+          id: string
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          admin_password?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          admin_password?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       receipt_items: {
         Row: {
-          cost_price: number
+          created_at: string
+          final_price: number | null
           id: string
-          product_id: string | null
-          product_name: string
-          profit: number
+          product_id: string
           quantity: number
           receipt_id: string
-          total_price: number
           unit_price: number
         }
         Insert: {
-          cost_price: number
+          created_at?: string
+          final_price?: number | null
           id?: string
-          product_id?: string | null
-          product_name: string
-          profit: number
+          product_id: string
           quantity: number
           receipt_id: string
-          total_price: number
           unit_price: number
         }
         Update: {
-          cost_price?: number
+          created_at?: string
+          final_price?: number | null
           id?: string
-          product_id?: string | null
-          product_name?: string
-          profit?: number
+          product_id?: string
           quantity?: number
           receipt_id?: string
-          total_price?: number
           unit_price?: number
         }
         Relationships: [
@@ -146,36 +131,33 @@ export type Database = {
       receipts: {
         Row: {
           created_at: string
-          discount: number
+          discount: number | null
           id: string
-          invoice_number: string | null
           payment_method: string | null
           profit: number
           subtotal: number
           total: number
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
-          discount?: number
-          id: string
-          invoice_number?: string | null
+          discount?: number | null
+          id?: string
           payment_method?: string | null
-          profit?: number
-          subtotal?: number
-          total?: number
-          user_id?: string | null
+          profit: number
+          subtotal: number
+          total: number
+          user_id: string
         }
         Update: {
           created_at?: string
-          discount?: number
+          discount?: number | null
           id?: string
-          invoice_number?: string | null
           payment_method?: string | null
           profit?: number
           subtotal?: number
           total?: number
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -218,93 +200,6 @@ export type Database = {
         }
         Relationships: []
       }
-      transaction_items: {
-        Row: {
-          id: string
-          price: number
-          product_id: string | null
-          product_name: string
-          quantity: number
-          subtotal: number
-          transaction_id: string
-        }
-        Insert: {
-          id?: string
-          price: number
-          product_id?: string | null
-          product_name: string
-          quantity: number
-          subtotal: number
-          transaction_id: string
-        }
-        Update: {
-          id?: string
-          price?: number
-          product_id?: string | null
-          product_name?: string
-          quantity?: number
-          subtotal?: number
-          transaction_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transaction_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transaction_items_transaction_id_fkey"
-            columns: ["transaction_id"]
-            isOneToOne: false
-            referencedRelation: "transactions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transactions: {
-        Row: {
-          cashier_name: string | null
-          discount_amount: number | null
-          discount_percent: number | null
-          final_amount: number
-          id: string
-          is_manual_note: boolean | null
-          notes: string | null
-          payment_method: string
-          total_amount: number
-          transaction_code: string
-          transaction_date: string
-        }
-        Insert: {
-          cashier_name?: string | null
-          discount_amount?: number | null
-          discount_percent?: number | null
-          final_amount: number
-          id?: string
-          is_manual_note?: boolean | null
-          notes?: string | null
-          payment_method: string
-          total_amount: number
-          transaction_code: string
-          transaction_date?: string
-        }
-        Update: {
-          cashier_name?: string | null
-          discount_amount?: number | null
-          discount_percent?: number | null
-          final_amount?: number
-          id?: string
-          is_manual_note?: boolean | null
-          notes?: string | null
-          payment_method?: string
-          total_amount?: number
-          transaction_code?: string
-          transaction_date?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -314,6 +209,7 @@ export type Database = {
         Args: { identifier: string }
         Returns: {
           email: string
+          username: string
         }[]
       }
     }
