@@ -77,108 +77,117 @@ export const StoreSettings = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => navigate('/')}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center gap-2">
-          <StoreIcon className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Pengaturan Toko</h1>
-        </div>
-      </div>
-
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Informasi Toko</CardTitle>
-            <CardDescription>
-              Kelola informasi dasar toko Anda
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Nama Toko</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Nama toko"
-                />
-              </div>
-              <div>
-                <Label htmlFor="category">Kategori Toko</Label>
-                <Select 
-                  value={formData.category} 
-                  onValueChange={(value: StoreCategory) => handleInputChange('category', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STORE_CATEGORIES.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+    <div className="min-h-screen w-full bg-background">
+      <div className="container mx-auto p-2 sm:p-4 md:p-6 max-w-4xl">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate('/')}
+              className="h-8 w-8 sm:h-10 sm:w-10 p-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <StoreIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <h1 className="text-lg sm:text-2xl font-bold">Pengaturan Toko</h1>
             </div>
+          </div>
 
-            <div>
-              <Label htmlFor="phone">Nomor Telepon</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="Nomor telepon toko"
-              />
+          <div className="grid gap-4 sm:gap-6">
+            <Card className="border-border">
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-base sm:text-lg">Informasi Toko</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
+                  Kelola informasi dasar toko Anda
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <Label htmlFor="name" className="text-xs sm:text-sm">Nama Toko</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      placeholder="Nama toko"
+                      className="h-9 sm:h-10 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="category" className="text-xs sm:text-sm">Kategori Toko</Label>
+                    <Select 
+                      value={formData.category} 
+                      onValueChange={(value: StoreCategory) => handleInputChange('category', value)}
+                    >
+                      <SelectTrigger className="h-9 sm:h-10 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STORE_CATEGORIES.map((category) => (
+                          <SelectItem key={category.value} value={category.value} className="text-sm">
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="phone" className="text-xs sm:text-sm">Nomor Telepon</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Nomor telepon toko"
+                    className="h-9 sm:h-10 text-sm"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="address" className="text-xs sm:text-sm">Alamat</Label>
+                  <Textarea
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    placeholder="Alamat lengkap toko"
+                    rows={3}
+                    className="text-sm resize-none"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border">
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-base sm:text-lg">Informasi Kasir</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
+                  Pengaturan informasi kasir untuk nota
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <Label htmlFor="cashier_name" className="text-xs sm:text-sm">Nama Kasir</Label>
+                  <Input
+                    id="cashier_name"
+                    value={formData.cashier_name}
+                    onChange={(e) => handleInputChange('cashier_name', e.target.value)}
+                    placeholder="Nama kasir"
+                    className="h-9 sm:h-10 text-sm"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-end pt-2">
+              <Button onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto sm:min-w-32 h-9 sm:h-10">
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                <span className="text-xs sm:text-sm">{isSaving ? 'Menyimpan...' : 'Simpan'}</span>
+              </Button>
             </div>
-
-            <div>
-              <Label htmlFor="address">Alamat</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                placeholder="Alamat lengkap toko"
-                rows={3}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Informasi Kasir</CardTitle>
-            <CardDescription>
-              Pengaturan informasi kasir untuk nota
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div>
-              <Label htmlFor="cashier_name">Nama Kasir</Label>
-              <Input
-                id="cashier_name"
-                value={formData.cashier_name}
-                onChange={(e) => handleInputChange('cashier_name', e.target.value)}
-                placeholder="Nama kasir"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={isSaving} className="min-w-32">
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? 'Menyimpan...' : 'Simpan'}
-          </Button>
+          </div>
         </div>
       </div>
     </div>

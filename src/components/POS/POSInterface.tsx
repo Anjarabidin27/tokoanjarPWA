@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PhotocopyDialog } from './PhotocopyDialog';
 import { PhotocopyService } from './PhotocopyService';
-import { WiFiPrinterManager } from './WiFiPrinterManager';
 import { AdminProtection } from '@/components/Auth/AdminProtection';
 import { 
   LazyProductGrid,
@@ -509,32 +508,29 @@ Profit: ${formatPrice(receipt.profit)}
             setCurrentTab(value);
           }
         }} className="w-full">
-          <TabsList className="flex flex-wrap w-full h-auto p-1 gap-1 justify-start sm:grid sm:grid-cols-8 sm:gap-1">
-            <TabsTrigger value="pos" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+          <TabsList className="flex flex-wrap w-full h-auto p-1 gap-1 justify-start">
+            <TabsTrigger value="pos" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Kasir
             </TabsTrigger>
-            <TabsTrigger value="manual-invoice" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="manual-invoice" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Nota Manual
             </TabsTrigger>
-            <TabsTrigger value="shopping-list" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="shopping-list" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Daftar Belanja
             </TabsTrigger>
-            <TabsTrigger value="stock" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="stock" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Stok
             </TabsTrigger>
-            <TabsTrigger value="receipt" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="receipt" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Nota
             </TabsTrigger>
-            <TabsTrigger value="wifi-print" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
-              Cetak WiFi
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="reports" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Laporan
             </TabsTrigger>
-            <TabsTrigger value="manual-reports" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="manual-reports" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Laporan Manual
             </TabsTrigger>
-            <TabsTrigger value="admin" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3">
+            <TabsTrigger value="admin" className="text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-3 rounded-md">
               Admin
             </TabsTrigger>
           </TabsList>
@@ -713,23 +709,18 @@ Profit: ${formatPrice(receipt.profit)}
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="wifi-print" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Cetak via WiFi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <WiFiPrinterManager onPrint={handleWiFiDirectPrint} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="admin" className="space-y-4">
+          <TabsContent value="admin" className="space-y-2 sm:space-y-4">
             <Tabs defaultValue="add-product" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="add-product">Tambah Produk</TabsTrigger>
-                <TabsTrigger value="stock-management">Kelola Stok</TabsTrigger>
-                <TabsTrigger value="advanced-reports">Laporan Lanjutan</TabsTrigger>
+              <TabsList className="flex flex-wrap w-full h-auto gap-1 p-1 sm:grid sm:grid-cols-3">
+                <TabsTrigger value="add-product" className="flex-1 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3 rounded-md">
+                  Tambah Produk
+                </TabsTrigger>
+                <TabsTrigger value="stock-management" className="flex-1 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3 rounded-md">
+                  Kelola Stok
+                </TabsTrigger>
+                <TabsTrigger value="advanced-reports" className="flex-1 text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-3 rounded-md">
+                  Laporan
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="add-product" className="space-y-4">

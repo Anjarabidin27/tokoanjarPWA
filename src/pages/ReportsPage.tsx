@@ -28,52 +28,60 @@ export const ReportsPage = () => {
 
   if (viewingReceipt) {
     return (
-      <div className="container mx-auto p-4 space-y-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleBackToReports}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Kembali ke Laporan
-          </Button>
-          <h1 className="text-2xl font-bold">Detail Transaksi</h1>
-        </div>
+      <div className="min-h-screen w-full bg-background">
+        <div className="container mx-auto p-2 sm:p-4 max-w-4xl">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBackToReports}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">Kembali</span>
+              </Button>
+              <h1 className="text-lg sm:text-2xl font-bold">Detail Transaksi</h1>
+            </div>
 
-        <ReceiptComponent
-          receipt={viewingReceipt}
-          formatPrice={formatPrice}
-          onBack={handleBackToReports}
-        />
+            <ReceiptComponent
+              receipt={viewingReceipt}
+              formatPrice={formatPrice}
+              onBack={handleBackToReports}
+            />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Laporan Penjualan</h1>
-          <p className="text-muted-foreground">
-            Kelola dan pantau riwayat transaksi Anda
-          </p>
-        </div>
-        <Link to="/">
-          <Button variant="outline" className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Kembali ke POS
-          </Button>
-        </Link>
-      </div>
+    <div className="min-h-screen w-full bg-background">
+      <div className="container mx-auto p-2 sm:p-4 max-w-7xl">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h1 className="text-xl sm:text-3xl font-bold">Laporan Penjualan</h1>
+              <p className="text-sm sm:text-base text-muted-foreground mt-1">
+                Kelola dan pantau riwayat transaksi Anda
+              </p>
+            </div>
+            <Link to="/">
+              <Button variant="outline" size="sm" className="flex items-center gap-2 w-full sm:w-auto">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Kembali ke POS</span>
+              </Button>
+            </Link>
+          </div>
 
-      <TransactionHistory
-        receipts={receipts.filter(receipt => !receipt.isManual && !receipt.id.startsWith('MNL-'))}
-        formatPrice={formatPrice}
-        onViewReceipt={handleViewReceipt}
-        onPrintReceipt={handlePrintReceipt}
-      />
+          <TransactionHistory
+            receipts={receipts.filter(receipt => !receipt.isManual && !receipt.id.startsWith('MNL-'))}
+            formatPrice={formatPrice}
+            onViewReceipt={handleViewReceipt}
+            onPrintReceipt={handlePrintReceipt}
+          />
+        </div>
+      </div>
     </div>
   );
 };
