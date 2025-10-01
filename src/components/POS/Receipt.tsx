@@ -8,6 +8,7 @@ import { ArrowLeft, Printer, Copy } from 'lucide-react';
 import { thermalPrinter } from '@/lib/thermal-printer';
 import { formatThermalReceipt, formatPrintReceipt } from '@/lib/receipt-formatter';
 import { toast } from 'sonner';
+import { useStore } from '@/contexts/StoreContext';
 
 interface ReceiptProps {
   receipt: ReceiptType;
@@ -16,12 +17,13 @@ interface ReceiptProps {
 }
 
 export const Receipt = ({ receipt, formatPrice, onBack }: ReceiptProps) => {
+  const { currentStore } = useStore();
   
   const handleThermalPrint = useCallback(async () => {
     try {
       // Try thermal printing first
       if (thermalPrinter.isConnected()) {
-        const receiptText = formatThermalReceipt(receipt, formatPrice);
+        const receiptText = formatThermalReceipt(receipt, formatPrice, currentStore);
         const printed = await thermalPrinter.print(receiptText);
         
         if (printed) {
@@ -33,7 +35,7 @@ export const Receipt = ({ receipt, formatPrice, onBack }: ReceiptProps) => {
       // Fallback to thermal printer connection attempt
       const connected = await thermalPrinter.connect();
       if (connected) {
-        const receiptText = formatThermalReceipt(receipt, formatPrice);
+        const receiptText = formatThermalReceipt(receipt, formatPrice, currentStore);
         const printed = await thermalPrinter.print(receiptText);
         
         if (printed) {
@@ -51,23 +53,23 @@ export const Receipt = ({ receipt, formatPrice, onBack }: ReceiptProps) => {
       toast.error('Thermal printer gagal, menggunakan printer browser...');
       handlePrint();
     }
-  }, [receipt, formatPrice]);
+  }, [receipt, formatPrice, currentStore]);
 
   const handlePrint = useCallback(() => {
-    const printContent = formatPrintReceipt(receipt, formatPrice);
+    const printContent = formatPrintReceipt(receipt, formatPrice, currentStore);
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.print();
     }
-  }, [receipt, formatPrice]);
+  }, [receipt, formatPrice, currentStore]);
 
   const handleCopyReceipt = useCallback(() => {
-    const receiptText = formatThermalReceipt(receipt, formatPrice);
+    const receiptText = formatThermalReceipt(receipt, formatPrice, currentStore);
     navigator.clipboard.writeText(receiptText);
     toast.success('Struk berhasil disalin ke clipboard!');
-  }, [receipt, formatPrice]);
+  }, [receipt, formatPrice, currentStore]);
 
   // Add Enter key support for thermal printing
   useEffect(() => {
@@ -124,13 +126,17 @@ export const Receipt = ({ receipt, formatPrice, onBack }: ReceiptProps) => {
         <CardContent>
           {/* Toko Info */}
           <div className="text-center mb-4 pb-3 border-b">
-            <h3 className="font-bold text-lg">Toko Anjar</h3>
-            <p className="text-sm text-muted-foreground">
-              Jalan Gajah - Dempet (Depan Koramil)
-            </p>
-            <p className="text-sm text-muted-foreground">
-              HP: 0895630183347
-            </p>
+            <h3 className="font-bold text-lg">{currentStore?.name || 'Toko'}</h3>
+            {currentStore?.address && (
+              <p className="text-sm text-muted-foreground">
+                {currentStore.address}
+              </p>
+            )}
+            {currentStore?.phone && (
+              <p className="text-sm text-muted-foreground">
+                HP: {currentStore.phone}
+              </p>
+            )}
           </div>
 
           {/* Items */}

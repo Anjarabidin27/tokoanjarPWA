@@ -1,6 +1,11 @@
 import { Receipt as ReceiptType } from '@/types/pos';
+import { Store } from '@/types/store';
 
-export const formatThermalReceipt = (receipt: ReceiptType, formatPrice: (price: number) => string): string => {
+export const formatThermalReceipt = (
+  receipt: ReceiptType, 
+  formatPrice: (price: number) => string,
+  store?: Store | null
+): string => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
       year: 'numeric',
@@ -24,12 +29,14 @@ export const formatThermalReceipt = (receipt: ReceiptType, formatPrice: (price: 
     return new Intl.NumberFormat('id-ID').format(amount);
   };
 
+  const storeName = store?.name?.toUpperCase() || 'TOKO';
+  const storeAddress = store?.address || '';
+  const storePhone = store?.phone || '';
+
   return `${ESC}@${CENTER}${BOLD_ON}================================${BOLD_OFF}
-${BOLD_ON}TOKO ANJAR FOTOCOPY & ATK${BOLD_OFF}
+${BOLD_ON}${storeName}${BOLD_OFF}
 ${BOLD_ON}================================${BOLD_OFF}
-Jl. Raya Gajah - Dempet
-(Depan Koramil Gajah)
-Telp/WA: 0895630183347
+${storeAddress ? storeAddress + '\n' : ''}${storePhone ? 'Telp/WA: ' + storePhone + '\n' : ''}
 
 ${BOLD_ON}================================${BOLD_OFF}
 ${BOLD_ON}STRUK PENJUALAN${BOLD_OFF}
@@ -69,7 +76,11 @@ ${BOLD_ON}================================${BOLD_OFF}
 ${CUT}`;
 };
 
-export const formatMobileA4ThermalReceipt = (receipt: ReceiptType, formatPrice: (price: number) => string): string => {
+export const formatMobileA4ThermalReceipt = (
+  receipt: ReceiptType, 
+  formatPrice: (price: number) => string,
+  store?: Store | null
+): string => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
       year: 'numeric',
@@ -96,12 +107,14 @@ export const formatMobileA4ThermalReceipt = (receipt: ReceiptType, formatPrice: 
   };
 
   const lineWidth = 48; // A4 thermal paper width
+  const storeName = store?.name?.toUpperCase() || 'TOKO';
+  const storeAddress = store?.address || '';
+  const storePhone = store?.phone || '';
 
   return `${ESC}@${CENTER}${BOLD_ON}${DOUBLE_HEIGHT}================================================${BOLD_OFF}${NORMAL_SIZE}
-${BOLD_ON}${DOUBLE_HEIGHT}      TOKO ANJAR FOTOCOPY & ATK      ${BOLD_OFF}${NORMAL_SIZE}
+${BOLD_ON}${DOUBLE_HEIGHT}      ${storeName}      ${BOLD_OFF}${NORMAL_SIZE}
 ${BOLD_ON}${DOUBLE_HEIGHT}================================================${BOLD_OFF}${NORMAL_SIZE}
-${CENTER}Jl. Raya Gajah - Dempet (Depan Koramil Gajah)
-Telp/WA: 0895630183347
+${CENTER}${storeAddress ? storeAddress + '\n' : ''}${storePhone ? 'Telp/WA: ' + storePhone + '\n' : ''}
 
 ${BOLD_ON}================================================${BOLD_OFF}
 ${BOLD_ON}${CENTER}           STRUK PENJUALAN           ${BOLD_OFF}
@@ -144,7 +157,11 @@ ${BOLD_ON}================================================${BOLD_OFF}
 ${CUT}`;
 };
 
-export const formatPrintReceipt = (receipt: ReceiptType, formatPrice: (price: number) => string): string => {
+export const formatPrintReceipt = (
+  receipt: ReceiptType, 
+  formatPrice: (price: number) => string,
+  store?: Store | null
+): string => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
       year: 'numeric',
@@ -155,16 +172,16 @@ export const formatPrintReceipt = (receipt: ReceiptType, formatPrice: (price: nu
     }).format(date);
   };
 
+  const storeName = store?.name || 'Toko';
+  const storeAddress = store?.address || '';
+  const storePhone = store?.phone || '';
+
   return `
       <div style="font-family: -ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace; max-width: 380px; margin: 0 auto; padding: 20px; background: white;">
         <div style="text-align: center; padding-bottom: 16px;">
-          <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">Toko Anjar Fotocopy & ATK</h2>
-          <p style="font-size: 14px; color: #666; margin-bottom: 4px;">
-            Jl. Raya Gajah - Dempet (depan Koramil Gajah)
-          </p>
-          <p style="font-size: 14px; color: #666; margin-bottom: 0;">
-            Telp/WA : 0895630183347
-          </p>
+          <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">${storeName}</h2>
+          ${storeAddress ? `<p style="font-size: 14px; color: #666; margin-bottom: 4px;">${storeAddress}</p>` : ''}
+          ${storePhone ? `<p style="font-size: 14px; color: #666; margin-bottom: 0;">Telp/WA: ${storePhone}</p>` : ''}
         </div>
 
         <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
@@ -230,7 +247,11 @@ export const formatPrintReceipt = (receipt: ReceiptType, formatPrice: (price: nu
     `;
 };
 
-export const formatMobileA4PrintReceipt = (receipt: ReceiptType, formatPrice: (price: number) => string): string => {
+export const formatMobileA4PrintReceipt = (
+  receipt: ReceiptType, 
+  formatPrice: (price: number) => string,
+  store?: Store | null
+): string => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
       year: 'numeric',
@@ -246,12 +267,16 @@ export const formatMobileA4PrintReceipt = (receipt: ReceiptType, formatPrice: (p
     return new Intl.NumberFormat('id-ID').format(amount);
   };
 
+  const storeName = store?.name?.toUpperCase() || 'TOKO';
+  const storeAddress = store?.address || '';
+  const storePhone = store?.phone || '';
+
   return `
       <div style="font-family: monospace; width: 100%; max-width: 100%; margin: 0; padding: 20px; box-sizing: border-box;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">TOKO ANJAR FOTOCOPY & ATK</h1>
-          <p style="font-size: 16px; margin-bottom: 5px;">Jl. Raya Gajah - Dempet (Depan Koramil Gajah)</p>
-          <p style="font-size: 16px; margin-bottom: 0;">Telp/WA: 0895630183347</p>
+          <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">${storeName}</h1>
+          ${storeAddress ? `<p style="font-size: 16px; margin-bottom: 5px;">${storeAddress}</p>` : ''}
+          ${storePhone ? `<p style="font-size: 16px; margin-bottom: 0;">Telp/WA: ${storePhone}</p>` : ''}
         </div>
         
         <div style="text-align: center; margin-bottom: 30px;">

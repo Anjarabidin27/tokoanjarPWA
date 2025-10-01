@@ -39,6 +39,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
+import { useStore } from '@/contexts/StoreContext';
 
 export const POSInterface = () => {
   const {
@@ -58,6 +59,7 @@ export const POSInterface = () => {
   } = usePOSContext();
 
   const { signOut } = useAuth();
+  const { currentStore } = useStore();
   const location = useLocation();
   const [lastReceipt, setLastReceipt] = useState<ReceiptType | null>(null);
   const [selectedReceipt, setSelectedReceipt] = useState<ReceiptType | null>(location.state?.viewReceipt || null);
@@ -182,7 +184,7 @@ export const POSInterface = () => {
       
       // Try thermal printing first
       if (thermalPrinter.isConnected()) {
-        const receiptText = formatThermalReceipt(receipt, formatPrice);
+        const receiptText = formatThermalReceipt(receipt, formatPrice, currentStore);
         const printed = await thermalPrinter.print(receiptText);
         
         if (printed) {
@@ -194,7 +196,7 @@ export const POSInterface = () => {
       // Fallback to thermal printer connection attempt
       const connected = await thermalPrinter.connect();
       if (connected) {
-        const receiptText = formatThermalReceipt(receipt, formatPrice);
+        const receiptText = formatThermalReceipt(receipt, formatPrice, currentStore);
         const printed = await thermalPrinter.print(receiptText);
         
         if (printed) {
@@ -216,10 +218,15 @@ export const POSInterface = () => {
   };
 
   const handleBrowserPrint = (receipt: ReceiptType) => {
+    const storeName = currentStore?.name || 'TOKO';
+    const storeAddress = currentStore?.address || '';
+    const storePhone = currentStore?.phone || '';
+    
     const printContent = `
 ===============================
-   TOKO ANJAR
+   ${storeName.toUpperCase()}
 ===============================
+${storeAddress ? storeAddress + '\n' : ''}${storePhone ? 'Telp: ' + storePhone + '\n' : ''}
 Invoice: ${receipt.id}
 Tanggal: ${new Date(receipt.timestamp).toLocaleDateString('id-ID')}
 Waktu: ${new Date(receipt.timestamp).toLocaleTimeString('id-ID')}
@@ -362,17 +369,19 @@ Profit: ${formatPrice(receipt.profit)}
               <div className="flex items-center gap-2">
                 <Store className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                 <div className="hidden sm:block">
-                  <h1 className="text-lg sm:text-2xl font-bold">Kasir Toko Anjar</h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Jalan Gajah - Dempet (Depan Koramil)
-                  </p>
+                  <h1 className="text-lg sm:text-2xl font-bold">Kasir {currentStore?.name || 'Toko'}</h1>
+                  {currentStore?.address && (
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      {currentStore.address}
+                    </p>
+                  )}
                   <p className="text-xs sm:text-sm text-primary font-medium">
-                    {getWelcomeMessage()}, Admin Kasir
+                    {getWelcomeMessage()}, {currentStore?.cashier_name || 'Admin Kasir'}
                   </p>
                 </div>
                 {/* Mobile compact header */}
                 <div className="sm:hidden">
-                  <h1 className="text-sm font-bold">Toko Anjar</h1>
+                  <h1 className="text-sm font-bold">{currentStore?.name || 'Toko'}</h1>
                   <p className="text-xs text-primary">
                     {getWelcomeMessage()}
                   </p>
