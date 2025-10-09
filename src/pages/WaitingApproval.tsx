@@ -21,7 +21,7 @@ export const WaitingApproval = () => {
           .from('profiles')
           .select('admin_whatsapp, admin_instagram')
           .eq('email', 'tokoanjar09@gmail.com')
-          .single();
+          .maybeSingle();
         
         if (error) {
           console.error('Failed to load admin contacts:', error);
